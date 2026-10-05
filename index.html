@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen</title>
+  </head>
+  <body>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的網頁程式作品集入口</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           1. 全局樣式與變數 (Global Styles & Variables)
+           ========================================== */
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --primary-red: #ff2a4b;
+            --primary-red-glow: rgba(255, 42, 75, 0.6);
+            --dark-red: #8b0000;
+            --locked-bg: #1a1a24;
+            --locked-border: #2d2d3a;
+            --locked-text: #666677;
+            --text-color: #ffffff;
+            --sub-text: #c5c6c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 網格酷炫背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 50% 20%, rgba(255, 42, 75, 0.15) 0%, transparent 60%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ==========================================
+           2. 個人檔案區域 (Profile Section)
+           ========================================== */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* 旋轉霓虹光圈大頭貼 */
+        .avatar-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0%, var(--primary-red) 50%, transparent 100%);
+            animation: rotateGlow 4s linear infinite;
+        }
+
+        .avatar-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: var(--bg-color);
+        }
+
+        .avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            z-index: 1;
+            border: 3px solid var(--primary-red);
+            box-shadow: 0 0 20px var(--primary-red-glow);
+        }
+
+        .user-name {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-red) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 42, 75, 0.3);
+        }
+
+        .user-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--sub-text);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================
+           3. 關卡網格與按鈕 (Quest Grid & Buttons)
+           ========================================== */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 10px;
+        }
+
+        /* 單個按鈕卡片通用樣式 */
+        .quest-card {
+            position: relative;
+            height: 110px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* 已解鎖按鈕 (Unlocked Card) */
+        .quest-card.unlocked {
+            background: linear-gradient(145deg, #1f2833, #151a21);
+            border: 2px solid var(--primary-red);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 42, 75, 0.1);
+            cursor: pointer;
+        }
+
+        /* 已解鎖按鈕 Hover 懸停效果 */
+        .quest-card.unlocked:hover {
+            transform: translateY(-8px) scale(1.03);
+            border-color: #ff6b81;
+            box-shadow: 0 12px 30px var(--primary-red-glow), 0 0 15px var(--primary-red);
+        }
+
+        /* 光束掃過動畫 (Shine Effect) */
+        .quest-card.unlocked::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transform: skewX(-25deg);
+            transition: left 0.75s ease;
+        }
+
+        .quest-card.unlocked:hover::before {
+            left: 200%;
+        }
+
+        /* 未解鎖按鈕 (Locked Card) */
+        .quest-card.locked {
+            background-color: var(--locked-bg);
+            border: 2px solid var(--locked-border);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* 未解鎖按鈕 Hover 懸停效果 */
+        .quest-card.locked:hover {
+            border-color: #444455;
+            opacity: 0.9;
+        }
+
+        /* 卡片文字樣式 */
+        .quest-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .unlocked .quest-tag {
+            color: var(--primary-red);
+        }
+
+        .locked .quest-tag {
+            color: var(--locked-text);
+        }
+
+        .quest-title {
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .unlocked .quest-title {
+            color: var(--text-color);
+        }
+
+        .locked .quest-title {
+            color: var(--locked-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 鎖頭圖示 */
+        .lock-icon {
+            font-size: 1rem;
+        }
+
+        /* ==========================================
+           4. 動畫效果 (Animations)
+           ========================================== */
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 被點擊時的鎖定震動動畫 */
+        @keyframes lockShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .shake {
+            animation: lockShake 0.4s ease-in-out;
+            border-color: #ff4d4d !important;
+        }
+
+        /* ==========================================
+           5. 響應式佈局 (Responsive Design - 手機版)
+           ========================================== */
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr); /* 平板改為 2 欄 */
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr; /* 手機版單欄排列 */
+                gap: 12px;
+            }
+
+            .quest-card {
+                height: 90px;
+            }
+
+            .user-name {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 個人檔案區塊 -->
+    <header class="profile-container">
+        <div class="avatar-wrapper">
+            <!-- 預設假圖片 (可替換為您的照片 URL) -->
+            <img class="avatar" src="https://i.postimg.cc/jd1QL4YP/2.png" alt="大頭貼">
+        </div>
+        <h1 class="user-name">jolibe</h1>
+        <p class="user-subtitle">前端網頁開發闖關作品集</p>
+    </header>
+
+    <!-- 2. 16 個關卡選單區塊 -->
+    <main class="grid-container">
+        
+        <!-- 已解鎖關卡 1 -->
+        <a href="w1/index.html" class="quest-card unlocked">
+            <span class="quest-tag">MISSION 01</span>
+            <span class="quest-title">Week 1 - 數位名片</span>
+        </a>
+
+        <!-- 已解鎖關卡 2 -->
+        <a href="w2/index.html" class="quest-card unlocked">
+            <span class="quest-tag">MISSION 02</span>
+            <span class="quest-title">Week 2 - 今天吃甚麼?</span>
+        </a>
+
+        <!-- 未解鎖關卡 3 ~ 16 -->
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 03</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 04</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 05</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 06</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 07</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 08</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 09</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 10</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 11</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 12</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 13</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 14</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 15</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+            <span class="quest-tag">MISSION 16</span>
+            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+        </a>
+
+    </main>
+
+    <!-- 3. JS 互動效果 -->
+    <script>
+        // 點擊未解鎖關卡時觸發震動提示動畫
+        function triggerLockedEffect(element) {
+            element.classList.add('shake');
+            setTimeout(() => {
+                element.classList.remove('shake');
+            }, 400);
+        }
+    </script>
+</body>
+</html>
+    <script src="./script.js"></script>
+  </body>
+</html>
