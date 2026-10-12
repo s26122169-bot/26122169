@@ -7,6 +7,10 @@
     <title>Pen</title>
   </head>
   <body>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -15,6 +19,7 @@
     <title>我的網頁程式作品集入口</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
     <style>
         /* ==========================================
            1. 全局樣式與變數 (Global Styles & Variables)
@@ -283,14 +288,14 @@
            ========================================== */
         @media (max-width: 900px) {
             .grid-container {
-                grid-template-columns: repeat(2, 1fr); /* 平板改為 2 欄 */
+                grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
             }
         }
 
         @media (max-width: 480px) {
             .grid-container {
-                grid-template-columns: 1fr; /* 手機版單欄排列 */
+                grid-template-columns: 1fr;
                 gap: 12px;
             }
 
@@ -309,7 +314,6 @@
     <!-- 1. 個人檔案區塊 -->
     <header class="profile-container">
         <div class="avatar-wrapper">
-            <!-- 預設假圖片 (可替換為您的照片 URL) -->
             <img class="avatar" src="https://i.postimg.cc/jd1QL4YP/2.png" alt="大頭貼">
         </div>
         <h1 class="user-name">jolibe</h1>
@@ -331,91 +335,14 @@
             <span class="quest-title">Week 2 - 今天吃甚麼?</span>
         </a>
 
-        <!-- 未解鎖關卡 3 ~ 16 -->
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
+        <!-- 已解鎖關卡 3 -->
+        <a href="w3/index.html" class="quest-card unlocked">
             <span class="quest-tag">MISSION 03</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
+            <span class="quest-title">Week 3 - 迷因產生器</span>
         </a>
 
+        <!-- 未解鎖關卡 4 ~ 16 -->
         <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
             <span class="quest-tag">MISSION 04</span>
             <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
         </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 05</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 06</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 07</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 08</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 09</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 10</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 11</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 12</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 13</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 14</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 15</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 16</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
-
-    </main>
-
-    <!-- 3. JS 互動效果 -->
-    <script>
-        // 點擊未解鎖關卡時觸發震動提示動畫
-        function triggerLockedEffect(element) {
-            element.classList.add('shake');
-            setTimeout(() => {
-                element.classList.remove('shake');
-            }, 400);
-        }
-    </script>
-</body>
-</html>
-    <script src="./script.js"></script>
-  </body>
-</html>
