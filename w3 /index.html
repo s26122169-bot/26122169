@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen</title>
+  </head>
+  <body>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>賽博迷因產生器 Cyber Meme Generator</title>
+  
+  <!-- 引入 Google Fonts (引入 Impact 風格與科技感的 Orbitron 字體) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  
+  <!-- 引入 html2canvas CDN (用於將 DOM 轉為圖片下載) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    /* ==========================================
+       1. 全局與主題變數 (Global Theme Variables)
+       ========================================== */
+    :root {
+      --bg-color: #0d0f17;
+      --panel-bg: #161925;
+      --accent-cyan: #00f0ff;
+      --accent-pink: #ff0055;
+      --accent-glow: rgba(0, 240, 255, 0.4);
+      --text-color: #ffffff;
+      --border-color: #2a2e45;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans TC', 'Orbitron', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* 頁面標題風格 */
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 10px var(--accent-glow);
+      text-transform: uppercase;
+    }
+
+    header p {
+      color: #8a8d9b;
+      font-size: 0.95rem;
+      margin-top: 5px;
+    }
+
+    /* ==========================================
+       2. 主要兩欄式佈局 (Responsive Layout)
+       ========================================== */
+    .app-container {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      width: 100%;
+      max-width: 1100px;
+      align-items: flex-start;
+    }
+
+    /* 控制面板區 */
+    .controls-panel {
+      flex: 1;
+      background: var(--panel-bg);
+      padding: 25px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* 迷因預覽區 */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel-bg);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================
+       3. 表單元件與控制項目 (Form Controls)
+       ========================================== */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 檔案上傳客製按鈕 */
+    .file-upload-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 2px dashed var(--accent-cyan);
+      border-radius: 8px;
+      color: var(--accent-cyan);
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .file-upload-btn:hover {
+      background: rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .file-upload-btn input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    /* 文字輸入框 */
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background: #0d0f17;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* 滑桿 (Range Inputs) */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #2a2e45;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    /* 酷炫下載按鈕 */
+    .download-btn {
+      margin-top: 10px;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px var(--accent-cyan);
+    }
+
+    /* ==========================================
+       4. 迷因預覽核心區塊 (Meme Container)
+       ========================================== */
+    .meme-card {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      background-color: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    /* 迷因底圖 */
+    .meme-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* 迷因文字共通樣式 (極致黑邊，確保清晰) */
+    .meme-text {
+      position: absolute;
+      width: 90%;
+      left: 5%;
+      text-align: center;
+      color: white;
+      font-family: 'Impact', 'Noto Sans TC', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 1.2;
+      word-wrap: break-word;
+      user-select: none;
+      /* 多重粗黑色陰影，打造經典迷因黑邊文字效果 */
+      text-shadow:
+        3px 3px 0 #000,
+       -3px 3px 0 #000,
+        3px -3px 0 #000,
+       -3px -3px 0 #000,
+        0px 3px 0 #000,
+        0px -3px 0 #000,
+        3px 0px 0 #000,
+       -3px 0px 0 #000,
+        2px 2px 5px rgba(0,0,0,0.8);
+    }
+
+    /* 上方文字位置 */
+    .meme-text.top {
+      top: 20px;
+    }
+
+    /* 下方文字位置 */
+    .meme-text.bottom {
+      bottom: 20px;
+    }
+
+    /* ==========================================
+       5. 手機版響應式 RWD 調整
+       ========================================== */
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+      }
+      
+      .preview-panel {
+        order: -1; /* 手機上讓預覽區排在上方，方便即時看效果 */
+      }
+      
+      header h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頁面標題 -->
+  <header>
+    <h1>Cyber Meme Generator</h1>
+    <p>打造你的專屬賽博迷因・一鍵生成快速下載</p>
+  </header>
+
+  <div class="app-container">
+    
+    <!-- 左側 / 下方：控制面板區 -->
+    <div class="controls-panel">
+      
+      <!-- 1. 本機圖片上傳 -->
+      <div class="control-group">
+        <label>選擇迷因底圖</label>
+        <div class="file-upload-btn">
+          <span>📁 上傳電腦/手機中的圖片</span>
+          <!-- 使用 input file 讀取本機圖片 -->
+          <input type="file" id="imageInput" accept="image/*">
+        </div>
+      </div>
+
+      <!-- 2. 上方文字輸入框 -->
+      <div class="control-group">
+        <label for="topTextInput">上方文字</label>
+        <input type="text" id="topTextInput" placeholder="當你發現程式碼一次就過..." value="當你發現程式碼">
+      </div>
+
+      <!-- 3. 下方文字輸入框 -->
+      <div class="control-group">
+        <label for="bottomTextInput">下方文字</label>
+        <input type="text" id="bottomTextInput" placeholder="輸入下方文字..." value="一次就編譯通過">
+      </div>
+
+      <!-- 4. 字體大小控制滑桿 -->
+      <div class="control-group">
+        <label>字體大小 <span id="fontSizeVal">36px</span></label>
+        <input type="range" id="fontSizeSlider" min="16" max="72" value="36">
+      </div>
+
+      <!-- 5. 上方文字垂直位置調整 -->
+      <div class="control-group">
+        <label>上方文字位置 <span id="topPosVal">20px</span></label>
+        <input type="range" id="topPosSlider" min="0" max="150" value="20">
+      </div>
+
+      <!-- 6. 下方文字垂直位置調整 -->
+      <div class="control-group">
+        <label>下方文字位置 <span id="bottomPosVal">20px</span></label>
+        <input type="range" id="bottomPosSlider" min="0" max="150" value="20">
+      </div>
+
+      <!-- 7. 一鍵下載按鈕 -->
+      <button class="download-btn" id="downloadBtn">⚡ 一鍵下載迷因圖 (PNG)</button>
+    </div>
+
+    <!-- 右側 / 上方：迷因即時預覽區 -->
+    <div class="preview-panel">
+      <!-- 被截圖與轉換的迷因容器區塊 -->
+      <div class="meme-card" id="memeContainer">
+        <!-- 預設預覽底圖 -->
+        <img id="memeImage" src="https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=600&auto=format&fit=crop&q=60" alt="迷因底圖">
+        <!-- 上方文字 -->
+        <div class="meme-text top" id="topTextDisplay">當你發現程式碼</div>
+        <!-- 下方文字 -->
+        <div class="meme-text bottom" id="bottomTextDisplay">一次就編譯通過</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript 邏輯程式碼 -->
+  <script>
+    // ==========================================
+    // 1. 取得 DOM 元素 (HTML Elements)
+    // ==========================================
+    const imageInput = document.getElementById('imageInput');
+    const memeImage = document.getElementById('memeImage');
+    
+    const topTextInput = document.getElementById('topTextInput');
+    const bottomTextInput = document.getElementById('bottomTextInput');
+    const topTextDisplay = document.getElementById('topTextDisplay');
+    const bottomTextDisplay = document.getElementById('bottomTextDisplay');
+
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeVal = document.getElementById('fontSizeVal');
+
+    const topPosSlider = document.getElementById('topPosSlider');
+    const topPosVal = document.getElementById('topPosVal');
+
+    const bottomPosSlider = document.getElementById('bottomPosSlider');
+    const bottomPosVal = document.getElementById('bottomPosVal');
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    const memeContainer = document.getElementById('memeContainer');
+
+    // ==========================================
+    // 2. 本機圖片讀取功能 (FileReader 避開 CORS)
+    // ==========================================
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // 建立 FileReader 物件讀取本機圖片檔案
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          // 將圖片轉換為 Data URL (base64) 並賦予 img 標籤
+          memeImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // ==========================================
+    // 3. 即時文字同步功能 (Live Text Preview)
+    // ==========================================
+    topTextInput.addEventListener('input', () => {
+      topTextDisplay.textContent = topTextInput.value;
+    });
+
+    bottomTextInput.addEventListener('input', () => {
+      bottomTextDisplay.textContent = bottomTextInput.value;
+    });
+
+    // ==========================================
+    // 4. 滑桿參數即時控制 (Sliders Control)
+    // ==========================================
+    // 調整字體大小
+    fontSizeSlider.addEventListener('input', () => {
+      const size = fontSizeSlider.value + 'px';
+      topTextDisplay.style.fontSize = size;
+      bottomTextDisplay.style.fontSize = size;
+      fontSizeVal.textContent = size; // 更新顯示數值
+    });
+
+    // 微調上方文字垂直位置
+    topPosSlider.addEventListener('input', () => {
+      const pos = topPosSlider.value + 'px';
+      topTextDisplay.style.top = pos;
+      topPosVal.textContent = pos;
+    });
+
+    // 微調下方文字垂直位置
+    bottomPosSlider.addEventListener('input', () => {
+      const pos = bottomPosSlider.value + 'px';
+      bottomTextDisplay.style.bottom = pos;
+      bottomPosVal.textContent = pos;
+    });
+
+    // Initialize Default Styles
+    topTextDisplay.style.fontSize = fontSizeSlider.value + 'px';
+    bottomTextDisplay.style.fontSize = fontSizeSlider.value + 'px';
+
+    // ==========================================
+    // 5. 使用 html2canvas 進行截圖並自動下載
+    // ==========================================
+    downloadBtn.addEventListener('click', () => {
+      // 顯示下載中的按鈕狀態
+      downloadBtn.textContent = '⏳ 圖片生成中...';
+      downloadBtn.style.opacity = '0.7';
+
+      // 使用 html2canvas 將迷因容器 (memeContainer) 轉為 Canvas
+      html2canvas(memeContainer, {
+        useCORS: true, // 支援跨域圖片繪製
+        scale: 2       // 提高解析度倍率，讓下載產出的圖片更清晰
+      }).then(canvas => {
+        // 將 Canvas 轉為 base64 格式 PNG 圖檔
+        const imageUrl = canvas.toDataURL('image/png');
+
+        // 創建一個隱藏的 <a> 標籤來觸發瀏覽器下載行為
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageUrl;
+        downloadLink.download = 'my-meme.png'; // 下載檔名
+
+        // 模擬點擊下載
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // 恢復按鈕狀態
+        downloadBtn.textContent = '⚡ 一鍵下載迷因圖 (PNG)';
+        downloadBtn.style.opacity = '1';
+      }).catch(err => {
+        console.error('下載失敗：', err);
+        alert('下載圖片時發生錯誤！');
+        downloadBtn.textContent = '⚡ 一鍵下載迷因圖 (PNG)';
+        downloadBtn.style.opacity = '1';
+      });
+    });
+  </script>
+</body>
+</html>
