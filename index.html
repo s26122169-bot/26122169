@@ -14,335 +14,484 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的網頁程式作品集入口</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
-    <style>
-        /* ==========================================
-           1. 全局樣式與變數 (Global Styles & Variables)
-           ========================================== */
-        :root {
-            --bg-color: #0b0c10;
-            --card-bg: #1f2833;
-            --primary-red: #ff2a4b;
-            --primary-red-glow: rgba(255, 42, 75, 0.6);
-            --dark-red: #8b0000;
-            --locked-bg: #1a1a24;
-            --locked-border: #2d2d3a;
-            --locked-text: #666677;
-            --text-color: #ffffff;
-            --sub-text: #c5c6c7;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>賽博迷因產生器 Cyber Meme Generator</title>
+  
+  <!-- 引入 Google Fonts (引入 Impact 風格與科技感的 Orbitron 字體) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  
+  <!-- 引入 html2canvas CDN (用於將 DOM 轉為圖片下載) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <style>
+    /* ==========================================
+       1. 全局與主題變數 (Global Theme Variables)
+       ========================================== */
+    :root {
+      --bg-color: #0d0f17;
+      --panel-bg: #161925;
+      --accent-cyan: #00f0ff;
+      --accent-pink: #ff0055;
+      --accent-glow: rgba(0, 240, 255, 0.4);
+      --text-color: #ffffff;
+      --border-color: #2a2e45;
+    }
 
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 40px 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans TC', 'Orbitron', sans-serif;
+    }
 
-        /* 網格酷炫背景 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: 
-                radial-gradient(circle at 50% 20%, rgba(255, 42, 75, 0.15) 0%, transparent 60%),
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 30px 30px, 30px 30px;
-            z-index: -1;
-            pointer-events: none;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
 
-        /* ==========================================
-           2. 個人檔案區域 (Profile Section)
-           ========================================== */
-        .profile-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 40px;
-            text-align: center;
-        }
+    /* 頁面標題風格 */
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-        /* 旋轉霓虹光圈大頭貼 */
-        .avatar-wrapper {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 10px var(--accent-glow);
+      text-transform: uppercase;
+    }
 
-        .avatar-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: -5px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent 0%, var(--primary-red) 50%, transparent 100%);
-            animation: rotateGlow 4s linear infinite;
-        }
+    header p {
+      color: #8a8d9b;
+      font-size: 0.95rem;
+      margin-top: 5px;
+    }
 
-        .avatar-wrapper::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 50%;
-            background: var(--bg-color);
-        }
+    /* ==========================================
+       2. 主要兩欄式佈局 (Responsive Layout)
+       ========================================== */
+    .app-container {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      width: 100%;
+      max-width: 1100px;
+      align-items: flex-start;
+    }
 
-        .avatar {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            object-fit: cover;
-            z-index: 1;
-            border: 3px solid var(--primary-red);
-            box-shadow: 0 0 20px var(--primary-red-glow);
-        }
+    /* 控制面板區 */
+    .controls-panel {
+      flex: 1;
+      background: var(--panel-bg);
+      padding: 25px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
 
-        .user-name {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #ffffff 0%, var(--primary-red) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(255, 42, 75, 0.3);
-        }
+    /* 迷因預覽區 */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel-bg);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
 
-        .user-subtitle {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
-            color: var(--sub-text);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
+    /* ==========================================
+       3. 表單元件與控制項目 (Form Controls)
+       ========================================== */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        /* ==========================================
-           3. 關卡網格與按鈕 (Quest Grid & Buttons)
-           ========================================== */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
-            padding: 10px;
-        }
+    .control-group label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+      display: flex;
+      justify-content: space-between;
+    }
 
-        /* 單個按鈕卡片通用樣式 */
-        .quest-card {
-            position: relative;
-            height: 110px;
-            border-radius: 12px;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            box-sizing: border-box;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            overflow: hidden;
-            user-select: none;
-        }
+    /* 檔案上傳客製按鈕 */
+    .file-upload-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 2px dashed var(--accent-cyan);
+      border-radius: 8px;
+      color: var(--accent-cyan);
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
 
-        /* 已解鎖按鈕 (Unlocked Card) */
-        .quest-card.unlocked {
-            background: linear-gradient(145deg, #1f2833, #151a21);
-            border: 2px solid var(--primary-red);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 42, 75, 0.1);
-            cursor: pointer;
-        }
+    .file-upload-btn:hover {
+      background: rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
 
-        /* 已解鎖按鈕 Hover 懸停效果 */
-        .quest-card.unlocked:hover {
-            transform: translateY(-8px) scale(1.03);
-            border-color: #ff6b81;
-            box-shadow: 0 12px 30px var(--primary-red-glow), 0 0 15px var(--primary-red);
-        }
+    .file-upload-btn input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
 
-        /* 光束掃過動畫 (Shine Effect) */
-        .quest-card.unlocked::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transform: skewX(-25deg);
-            transition: left 0.75s ease;
-        }
+    /* 文字輸入框 */
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background: #0d0f17;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
 
-        .quest-card.unlocked:hover::before {
-            left: 200%;
-        }
+    input[type="text"]:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
 
-        /* 未解鎖按鈕 (Locked Card) */
-        .quest-card.locked {
-            background-color: var(--locked-bg);
-            border: 2px solid var(--locked-border);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
+    /* 滑桿 (Range Inputs) */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #2a2e45;
+      border-radius: 3px;
+      outline: none;
+    }
 
-        /* 未解鎖按鈕 Hover 懸停效果 */
-        .quest-card.locked:hover {
-            border-color: #444455;
-            opacity: 0.9;
-        }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
 
-        /* 卡片文字樣式 */
-        .quest-tag {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
+    /* 酷炫下載按鈕 */
+    .download-btn {
+      margin-top: 10px;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
 
-        .unlocked .quest-tag {
-            color: var(--primary-red);
-        }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px var(--accent-cyan);
+    }
 
-        .locked .quest-tag {
-            color: var(--locked-text);
-        }
+    /* ==========================================
+       4. 迷因預覽核心區塊 (Meme Container)
+       ========================================== */
+    .meme-card {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      background-color: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
 
-        .quest-title {
-            font-size: 1rem;
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.3;
-        }
+    /* 迷因底圖 */
+    .meme-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
 
-        .unlocked .quest-title {
-            color: var(--text-color);
-        }
+    /* 迷因文字共通樣式 (極致黑邊，確保清晰) */
+    .meme-text {
+      position: absolute;
+      width: 90%;
+      left: 5%;
+      text-align: center;
+      color: white;
+      font-family: 'Impact', 'Noto Sans TC', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 1.2;
+      word-wrap: break-word;
+      user-select: none;
+      /* 多重粗黑色陰影，打造經典迷因黑邊文字效果 */
+      text-shadow:
+        3px 3px 0 #000,
+       -3px 3px 0 #000,
+        3px -3px 0 #000,
+       -3px -3px 0 #000,
+        0px 3px 0 #000,
+        0px -3px 0 #000,
+        3px 0px 0 #000,
+       -3px 0px 0 #000,
+        2px 2px 5px rgba(0,0,0,0.8);
+    }
 
-        .locked .quest-title {
-            color: var(--locked-text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    /* 上方文字位置 */
+    .meme-text.top {
+      top: 20px;
+    }
 
-        /* 鎖頭圖示 */
-        .lock-icon {
-            font-size: 1rem;
-        }
+    /* 下方文字位置 */
+    .meme-text.bottom {
+      bottom: 20px;
+    }
 
-        /* ==========================================
-           4. 動畫效果 (Animations)
-           ========================================== */
-        @keyframes rotateGlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 被點擊時的鎖定震動動畫 */
-        @keyframes lockShake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
-        }
-
-        .shake {
-            animation: lockShake 0.4s ease-in-out;
-            border-color: #ff4d4d !important;
-        }
-
-        /* ==========================================
-           5. 響應式佈局 (Responsive Design - 手機版)
-           ========================================== */
-        @media (max-width: 900px) {
-            .grid-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .quest-card {
-                height: 90px;
-            }
-
-            .user-name {
-                font-size: 1.6rem;
-            }
-        }
-    </style>
+    /* ==========================================
+       5. 手機版響應式 RWD 調整
+       ========================================== */
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+      }
+      
+      .preview-panel {
+        order: -1; /* 手機上讓預覽區排在上方，方便即時看效果 */
+      }
+      
+      header h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- 1. 個人檔案區塊 -->
-    <header class="profile-container">
-        <div class="avatar-wrapper">
-            <img class="avatar" src="https://i.postimg.cc/jd1QL4YP/2.png" alt="大頭貼">
+  <!-- 頁面標題 -->
+  <header>
+    <h1>Cyber Meme Generator</h1>
+    <p>打造你的專屬賽博迷因・一鍵生成快速下載</p>
+  </header>
+
+  <div class="app-container">
+    
+    <!-- 左側 / 下方：控制面板區 -->
+    <div class="controls-panel">
+      
+      <!-- 1. 本機圖片上傳 -->
+      <div class="control-group">
+        <label>選擇迷因底圖</label>
+        <div class="file-upload-btn">
+          <span>📁 上傳電腦/手機中的圖片</span>
+          <!-- 使用 input file 讀取本機圖片 -->
+          <input type="file" id="imageInput" accept="image/*">
         </div>
-        <h1 class="user-name">jolibe</h1>
-        <p class="user-subtitle">前端網頁開發闖關作品集</p>
-    </header>
+      </div>
 
-    <!-- 2. 16 個關卡選單區塊 -->
-    <main class="grid-container">
-        
-        <!-- 已解鎖關卡 1 -->
-        <a href="w1/index.html" class="quest-card unlocked">
-            <span class="quest-tag">MISSION 01</span>
-            <span class="quest-title">Week 1 - 數位名片</span>
-        </a>
+      <!-- 2. 上方文字輸入框 -->
+      <div class="control-group">
+        <label for="topTextInput">上方文字</label>
+        <input type="text" id="topTextInput" placeholder="當你發現程式碼一次就過..." value="當你發現程式碼">
+      </div>
 
-        <!-- 已解鎖關卡 2 -->
-        <a href="w2/index.html" class="quest-card unlocked">
-            <span class="quest-tag">MISSION 02</span>
-            <span class="quest-title">Week 2 - 今天吃甚麼?</span>
-        </a>
+      <!-- 3. 下方文字輸入框 -->
+      <div class="control-group">
+        <label for="bottomTextInput">下方文字</label>
+        <input type="text" id="bottomTextInput" placeholder="輸入下方文字..." value="一次就編譯通過">
+      </div>
 
-        <!-- 已解鎖關卡 3 -->
-        <a href="w3/index.html" class="quest-card unlocked">
-            <span class="quest-tag">MISSION 03</span>
-            <span class="quest-title">Week 3 - 迷因產生器</span>
-        </a>
+      <!-- 4. 字體大小控制滑桿 -->
+      <div class="control-group">
+        <label>字體大小 <span id="fontSizeVal">36px</span></label>
+        <input type="range" id="fontSizeSlider" min="16" max="72" value="36">
+      </div>
 
-        <!-- 未解鎖關卡 4 ~ 16 -->
-        <a href="javascript:void(0)" class="quest-card locked" onclick="triggerLockedEffect(this)">
-            <span class="quest-tag">MISSION 04</span>
-            <span class="quest-title"><span class="lock-icon">🔒</span> 未解鎖</span>
-        </a>
+      <!-- 5. 上方文字垂直位置調整 -->
+      <div class="control-group">
+        <label>上方文字位置 <span id="topPosVal">20px</span></label>
+        <input type="range" id="topPosSlider" min="0" max="150" value="20">
+      </div>
+
+      <!-- 6. 下方文字垂直位置調整 -->
+      <div class="control-group">
+        <label>下方文字位置 <span id="bottomPosVal">20px</span></label>
+        <input type="range" id="bottomPosSlider" min="0" max="150" value="20">
+      </div>
+
+      <!-- 7. 一鍵下載按鈕 -->
+      <button class="download-btn" id="downloadBtn">⚡ 一鍵下載迷因圖 (PNG)</button>
+    </div>
+
+    <!-- 右側 / 上方：迷因即時預覽區 -->
+    <div class="preview-panel">
+      <!-- 被截圖與轉換的迷因容器區塊 -->
+      <div class="meme-card" id="memeContainer">
+        <!-- 預設預覽底圖 -->
+        <img id="memeImage" src="https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=600&auto=format&fit=crop&q=60" alt="迷因底圖">
+        <!-- 上方文字 -->
+        <div class="meme-text top" id="topTextDisplay">當你發現程式碼</div>
+        <!-- 下方文字 -->
+        <div class="meme-text bottom" id="bottomTextDisplay">一次就編譯通過</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript 邏輯程式碼 -->
+  <script>
+    // ==========================================
+    // 1. 取得 DOM 元素 (HTML Elements)
+    // ==========================================
+    const imageInput = document.getElementById('imageInput');
+    const memeImage = document.getElementById('memeImage');
+    
+    const topTextInput = document.getElementById('topTextInput');
+    const bottomTextInput = document.getElementById('bottomTextInput');
+    const topTextDisplay = document.getElementById('topTextDisplay');
+    const bottomTextDisplay = document.getElementById('bottomTextDisplay');
+
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeVal = document.getElementById('fontSizeVal');
+
+    const topPosSlider = document.getElementById('topPosSlider');
+    const topPosVal = document.getElementById('topPosVal');
+
+    const bottomPosSlider = document.getElementById('bottomPosSlider');
+    const bottomPosVal = document.getElementById('bottomPosVal');
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    const memeContainer = document.getElementById('memeContainer');
+
+    // ==========================================
+    // 2. 本機圖片讀取功能 (FileReader 避開 CORS)
+    // ==========================================
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // 建立 FileReader 物件讀取本機圖片檔案
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          // 將圖片轉換為 Data URL (base64) 並賦予 img 標籤
+          memeImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // ==========================================
+    // 3. 即時文字同步功能 (Live Text Preview)
+    // ==========================================
+    topTextInput.addEventListener('input', () => {
+      topTextDisplay.textContent = topTextInput.value;
+    });
+
+    bottomTextInput.addEventListener('input', () => {
+      bottomTextDisplay.textContent = bottomTextInput.value;
+    });
+
+    // ==========================================
+    // 4. 滑桿參數即時控制 (Sliders Control)
+    // ==========================================
+    // 調整字體大小
+    fontSizeSlider.addEventListener('input', () => {
+      const size = fontSizeSlider.value + 'px';
+      topTextDisplay.style.fontSize = size;
+      bottomTextDisplay.style.fontSize = size;
+      fontSizeVal.textContent = size; // 更新顯示數值
+    });
+
+    // 微調上方文字垂直位置
+    topPosSlider.addEventListener('input', () => {
+      const pos = topPosSlider.value + 'px';
+      topTextDisplay.style.top = pos;
+      topPosVal.textContent = pos;
+    });
+
+    // 微調下方文字垂直位置
+    bottomPosSlider.addEventListener('input', () => {
+      const pos = bottomPosSlider.value + 'px';
+      bottomTextDisplay.style.bottom = pos;
+      bottomPosVal.textContent = pos;
+    });
+
+    // Initialize Default Styles
+    topTextDisplay.style.fontSize = fontSizeSlider.value + 'px';
+    bottomTextDisplay.style.fontSize = fontSizeSlider.value + 'px';
+
+    // ==========================================
+    // 5. 使用 html2canvas 進行截圖並自動下載
+    // ==========================================
+    downloadBtn.addEventListener('click', () => {
+      // 顯示下載中的按鈕狀態
+      downloadBtn.textContent = '⏳ 圖片生成中...';
+      downloadBtn.style.opacity = '0.7';
+
+      // 使用 html2canvas 將迷因容器 (memeContainer) 轉為 Canvas
+      html2canvas(memeContainer, {
+        useCORS: true, // 支援跨域圖片繪製
+        scale: 2       // 提高解析度倍率，讓下載產出的圖片更清晰
+      }).then(canvas => {
+        // 將 Canvas 轉為 base64 格式 PNG 圖檔
+        const imageUrl = canvas.toDataURL('image/png');
+
+        // 創建一個隱藏的 <a> 標籤來觸發瀏覽器下載行為
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageUrl;
+        downloadLink.download = 'my-meme.png'; // 下載檔名
+
+        // 模擬點擊下載
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // 恢復按鈕狀態
+        downloadBtn.textContent = '⚡ 一鍵下載迷因圖 (PNG)';
+        downloadBtn.style.opacity = '1';
+      }).catch(err => {
+        console.error('下載失敗：', err);
+        alert('下載圖片時發生錯誤！');
+        downloadBtn.textContent = '⚡ 一鍵下載迷因圖 (PNG)';
+        downloadBtn.style.opacity = '1';
+      });
+    });
+  </script>
+</body>
+</html>
